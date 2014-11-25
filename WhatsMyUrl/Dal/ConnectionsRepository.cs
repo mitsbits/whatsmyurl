@@ -38,7 +38,7 @@ namespace WhatsMyUrl.Dal
         public static bool ShouldConnect(string sessionId, string hubId)
         {
             var collection = GetHubConnectionCollection();
-            if (collection.AsQueryable().Any(x => x.SessionId == sessionId)) return false;
+            if (collection.AsQueryable().Count(x => x.SessionId == sessionId) > 1) return false;
             var newConnection = new HubConnection {Id = hubId, SessionId = sessionId};
             collection.Insert(newConnection);
             return true;

@@ -28,21 +28,21 @@
         <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
         <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
     </div>
-</div>     
+</div>
 @section scripts
-{               
-<script src="~/Scripts/jquery.signalR-2.1.2.js"></script>
-<script src="~/signalr/hubs"></script>
+{
+    <script src="~/Scripts/jquery.signalR-2.1.2.js"></script>
+    <script src="~/signalr/hubs"></script>
     <script type="text/javascript">
-        $(function() {
+        $(function () {
             $.connection.hub.start().done(function () {
                 $.ajax({
-                    url: '/Api/Assist/HubConnect',
+                    url: '/home/hubconnect',
                     data: { connectionId: $.connection.hub.id },
                     type: 'post',
                     success: function (shouldConnect) {
-                        if (shouldConnect) {
-                           alert('Too many broswer tabs open. Shutting down SignalR connection.');
+                        if (!shouldConnect) {
+                            alert('Too many broswer tabs open. Shutting down SignalR connection.');
                             $.connection.hub.stop();
                         }
                     }

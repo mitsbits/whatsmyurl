@@ -1,5 +1,4 @@
-﻿using System.Web.Http;
-using Owin;
+﻿using Owin;
 
 namespace WhatsMyUrl
 {
@@ -10,15 +9,7 @@ namespace WhatsMyUrl
         {
             app.MapSignalR();
 
-            HttpConfiguration config = new HttpConfiguration();
 
-            config.Routes.MapHttpRoute(
-                name: "DefaultApi",
-                routeTemplate: "api/{controller}/{id}",
-                defaults: new { id = RouteParameter.Optional }
-            );
-
-            app.UseWebApi(config); 
         }
     }
 } 
