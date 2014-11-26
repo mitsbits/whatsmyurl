@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Principal;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Mvc.Filters;
+using System.Web.Security;
 using System.Web.SessionState;
 using WhatsMyUrl.Dal;
 using WhatsMyUrl.Dal.Model;
@@ -32,17 +35,14 @@ namespace WhatsMyUrl.Controllers
         }
 
         [HttpPost]
+        [Route("HubConnect")]
         public ActionResult HubConnect(string connectionId)
         {
             Session["hubId"] = connectionId;
-            var hubConnection = new HubConnection
-            {
-                Id = connectionId,
-                SessionId = Session.SessionID
-            };
-
-            var shouldConnect = ConnectionsRepository.ShouldConnect(hubConnection.SessionId, connectionId);
-            return Json(shouldConnect);
+            var hubConnection = ConnectionsRepository.Event(Session.SessionID, connectionId, HubState.Connected);
+            return Json(hubConnection);
         }
+
+
     }
 }

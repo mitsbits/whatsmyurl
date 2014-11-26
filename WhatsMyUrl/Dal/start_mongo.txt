@@ -1,2 +1,2 @@
-﻿D:\Program Files\MongoDB\data\bin
+﻿D:\Program Files\MongoDB\bin
 mongod.exe --dbpath "D:\Program Files\MongoDB\data" 

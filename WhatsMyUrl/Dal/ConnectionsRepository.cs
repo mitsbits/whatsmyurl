@@ -1,5 +1,6 @@
 ﻿using System.Configuration;
 using System.Linq;
+using System.Web.Services.Description;
 using MongoDB.Driver;
 using MongoDB.Driver.Builders;
 using WhatsMyUrl.Dal.Model;
@@ -28,27 +29,50 @@ namespace WhatsMyUrl.Dal
             return _mongoDB.GetCollection<HubConnection>("hubConnections");
         }
 
-        public static int CheckSessionForConncetions(string sessionId)
+
+
+        public static HubConnection Event(string sessionId, string hubId, HubState state = HubState.Unknown)
         {
+            var connection = new HubConnection(sessionId, hubId, state);
             var collection = GetHubConnectionCollection();
-            var activeConnectionCount = collection.AsQueryable().Count(x => x.SessionId == sessionId);
-            return activeConnectionCount;
+            collection.Insert(connection);
+            return connection;
         }
 
-        public static bool ShouldConnect(string sessionId, string hubId)
+        private static HubConnection GetLastEventForSession(string sessionId, params HubState[] states)
         {
             var collection = GetHubConnectionCollection();
-            if (collection.AsQueryable().Count(x => x.SessionId == sessionId) > 1) return false;
-            var newConnection = new HubConnection {Id = hubId, SessionId = sessionId};
-            collection.Insert(newConnection);
-            return true;
+            var hit =
+                collection.AsQueryable()
+                    .Where(x => x.SessionId == sessionId && states.Contains(x.HubState))
+                    .OrderByDescending(x => x.CreatedOn)
+                    .FirstOrDefault();
+            return hit;
+        }
+        private static HubConnection GetLastEventForHub(string hubId, params HubState[] states)
+        {
+            var collection = GetHubConnectionCollection();
+            var hit =
+                collection.AsQueryable()
+                    .Where(x => x.HubId == hubId && states.Contains(x.HubState))
+                    .OrderByDescending(x => x.CreatedOn)
+                    .FirstOrDefault();
+            return hit;
         }
 
-        public static void ClearConnections(string hubId)
+        public static void OnConnected(string connectionId, string sessionId)
         {
-            var collection = GetHubConnectionCollection();
-            var query = Query<HubConnection>.EQ(x => x.Id, hubId);
-            collection.Remove(query);
+            Event(sessionId, connectionId, HubState.Connected);
+        }
+
+        public static void OnReconnected(string connectionId, string sessionId)
+        {
+            Event(sessionId, connectionId, HubState.Connected);
+        }
+
+        public static void OnDisconnected(string connectionId, string sessionId, bool stopCalled)
+        {
+            Event(sessionId, connectionId, HubState.Disconnected);
         }
     }
    

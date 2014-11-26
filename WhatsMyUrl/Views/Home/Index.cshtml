@@ -35,17 +35,19 @@
     <script src="~/signalr/hubs"></script>
     <script type="text/javascript">
         $(function () {
+            $.connection.assistHub.client.hello = function () {
+                alert("Hello from server");
+            };
             $.connection.hub.start().done(function () {
                 $.ajax({
-                    url: '/home/hubconnect',
+                    url: '/hubconnect',
                     data: { connectionId: $.connection.hub.id },
                     type: 'post',
                     success: function (shouldConnect) {
-                        if (!shouldConnect) {
-                            alert('Too many broswer tabs open. Shutting down SignalR connection.');
-                            $.connection.hub.stop();
-                        }
+                        alert($.toJSON(shouldConnect));
+                        $.connection.hub.stop();
                     }
+                 
                 });
             });
         });
