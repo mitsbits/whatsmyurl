@@ -29,8 +29,6 @@ namespace WhatsMyUrl.Dal
             return _mongoDB.GetCollection<HubConnection>("hubConnections");
         }
 
-
-
         public static HubConnection Event(string sessionId, string hubId, HubState state = HubState.Unknown)
         {
             var connection = new HubConnection(sessionId, hubId, state);

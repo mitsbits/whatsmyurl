@@ -7,14 +7,22 @@ using System.Web.Mvc;
 using System.Web.Mvc.Filters;
 using System.Web.Security;
 using System.Web.SessionState;
+using Microsoft.AspNet.SignalR;
 using WhatsMyUrl.Dal;
 using WhatsMyUrl.Dal.Model;
+using WhatsMyUrl.Hubs;
 
 namespace WhatsMyUrl.Controllers
 {
     [SessionState(SessionStateBehavior.Required)]
     public class HomeController : Controller
     {
+        protected override void OnResultExecuted(ResultExecutedContext filterContext)
+        {
+            var hubContext = GlobalHost.ConnectionManager.GetHubContext<AssistHub>();
+            hubContext.Clients.All.hello();
+        }
+
         public ActionResult Index()
         {
             return View();
@@ -36,7 +44,7 @@ namespace WhatsMyUrl.Controllers
 
         [HttpPost]
         [Route("HubConnect")]
-        public ActionResult HubConnect(string connectionId)
+        public JsonResult HubConnect(string connectionId)
         {
             Session["hubId"] = connectionId;
             var hubConnection = ConnectionsRepository.Event(Session.SessionID, connectionId, HubState.Connected);
