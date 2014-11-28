@@ -8,10 +8,10 @@ using  MongoDB.Driver.Linq;
 
 namespace WhatsMyUrl.Dal
 {
-    public class ConnectionsRepository
+    public class MongoConnectionsRepository
     {
         private static MongoDatabase _mongoDB;
-        static ConnectionsRepository()
+        static MongoConnectionsRepository()
         {
             _mongoDB = RetreiveMongohqDb();
         }
@@ -24,20 +24,20 @@ namespace WhatsMyUrl.Dal
             return mongoClient.GetServer().GetDatabase("whatsMyUrl");
         }
 
-        private static MongoCollection<HubConnection> GetHubConnectionCollection()
+        private static MongoCollection<MongoHubConnection> GetHubConnectionCollection()
         {
-            return _mongoDB.GetCollection<HubConnection>("hubConnections");
+            return _mongoDB.GetCollection<MongoHubConnection>("hubConnections");
         }
 
-        public static HubConnection Event(string sessionId, string hubId, HubState state = HubState.Unknown)
+        public static MongoHubConnection Event(string sessionId, string hubId, HubState state = HubState.Unknown)
         {
-            var connection = new HubConnection(sessionId, hubId, state);
+            var connection = new MongoHubConnection(sessionId, hubId, state);
             var collection = GetHubConnectionCollection();
             collection.Insert(connection);
             return connection;
         }
 
-        private static HubConnection GetLastEventForSession(string sessionId, params HubState[] states)
+        private static MongoHubConnection GetLastEventForSession(string sessionId, params HubState[] states)
         {
             var collection = GetHubConnectionCollection();
             var hit =
@@ -47,7 +47,7 @@ namespace WhatsMyUrl.Dal
                     .FirstOrDefault();
             return hit;
         }
-        private static HubConnection GetLastEventForHub(string hubId, params HubState[] states)
+        private static MongoHubConnection GetLastEventForHub(string hubId, params HubState[] states)
         {
             var collection = GetHubConnectionCollection();
             var hit =

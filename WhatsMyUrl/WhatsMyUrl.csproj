@@ -47,6 +47,12 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
     </Reference>
+    <Reference Include="EntityFramework">
+      <HintPath>..\packages\EntityFramework.6.1.1\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer">
+      <HintPath>..\packages\EntityFramework.6.1.1\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.AspNet.SignalR.Core">
       <HintPath>..\packages\Microsoft.AspNet.SignalR.Core.2.1.2\lib\net45\Microsoft.AspNet.SignalR.Core.dll</HintPath>
     </Reference>
@@ -142,14 +148,25 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Dal\ConnectionsRepository.cs" />
-    <Compile Include="Dal\Model\HubConnection.cs" />
+    <Compile Include="Dal\IConectionsRepository.cs" />
+    <Compile Include="Dal\MongoConnectionsRepository.cs" />
+    <Compile Include="Dal\Model\HubState.cs" />
+    <Compile Include="Dal\Model\IHubConnection.cs" />
+    <Compile Include="Dal\Model\MongoHubConnection.cs" />
+    <Compile Include="Dal\Model\SessionConnection.cs" />
     <Compile Include="Dal\Model\UserSession.cs" />
+    <Compile Include="Dal\SessionConnectionContext.cs" />
+    <Compile Include="Dal\SqlConectionsRepository.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Hubs\AssistHub.cs" />
     <Compile Include="Hubs\AssistUserProvider.cs" />
+    <Compile Include="Migrations\201411282012371_SessionConnections.cs" />
+    <Compile Include="Migrations\201411282012371_SessionConnections.Designer.cs">
+      <DependentUpon>201411282012371_SessionConnections.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
@@ -213,6 +230,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201411282012371_SessionConnections.resx">
+      <DependentUpon>201411282012371_SessionConnections.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

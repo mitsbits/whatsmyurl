@@ -1,27 +1,23 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Web;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace WhatsMyUrl.Dal.Model
 {
-    public class HubConnection
+    public class MongoHubConnection : IHubConnection<string, string>
     {
-        public HubConnection(string sessionId, string hubId, HubState state)
+        public MongoHubConnection(string sessionId, string hubId, HubState state)
             : this(sessionId, hubId)
         {
             HubState = state;
         }
-        public HubConnection(string sessionId, string hubId)
+        public MongoHubConnection(string sessionId, string hubId)
             : this()
         {
             SessionId = sessionId;
             HubId = hubId;
         }
-        protected HubConnection()
+        protected MongoHubConnection()
         {
             Id = Guid.NewGuid().ToString();
             CreatedOn = DateTime.UtcNow;
@@ -35,13 +31,5 @@ namespace WhatsMyUrl.Dal.Model
 
         public HubState HubState { get; set; }
         public DateTime CreatedOn { get; private set; }
-    }
-
-
-    public enum HubState
-    {
-        Unknown = 0,
-        Connected = 1,
-        Disconnected = 2
     }
 }

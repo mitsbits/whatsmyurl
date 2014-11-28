@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNet.SignalR;
+﻿using System.Linq.Expressions;
+using Microsoft.AspNet.SignalR;
 using Owin;
+using WhatsMyUrl.Dal;
 using WhatsMyUrl.Hubs;
 
 namespace WhatsMyUrl
@@ -9,9 +11,10 @@ namespace WhatsMyUrl
     {
         public void Configuration(IAppBuilder app)
         {
+            GlobalHost.DependencyResolver.Register(
+                typeof(AssistHub),
+                () => new AssistHub(new SqlConectionsRepository()));
             app.MapSignalR();
-            //GlobalHost.DependencyResolver.Register(typeof(IUserIdProvider), () => new AssistUserProvider());
-
         }
     }
 }

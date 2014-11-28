@@ -17,6 +17,13 @@ namespace WhatsMyUrl.Controllers
     [SessionState(SessionStateBehavior.Required)]
     public class HomeController : Controller
     {
+        private readonly IConectionsRepository _repo;
+
+        public HomeController()
+        {
+            _repo = new SqlConectionsRepository();
+        }
+
         protected override void OnResultExecuted(ResultExecutedContext filterContext)
         {
             var hubContext = GlobalHost.ConnectionManager.GetHubContext<AssistHub>();
@@ -47,8 +54,8 @@ namespace WhatsMyUrl.Controllers
         public JsonResult HubConnect(string connectionId)
         {
             Session["hubId"] = connectionId;
-            var hubConnection = ConnectionsRepository.Event(Session.SessionID, connectionId, HubState.Connected);
-            return Json(hubConnection);
+            var hubConnection = _repo.Event(Session.SessionID, Guid.Parse(connectionId), HubState.Connected);
+            return Json(hubConnection.Result);
         }
 
 
