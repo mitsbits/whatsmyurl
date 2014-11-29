@@ -7,13 +7,13 @@ namespace WhatsMyUrl.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.1-30610")]
-    public sealed partial class SessionConnections : IMigrationMetadata
+    public sealed partial class Init : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(SessionConnections));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(Init));
         
         string IMigrationMetadata.Id
         {
-            get { return "201411282012371_SessionConnections"; }
+            get { return "201411291135491_Init"; }
         }
         
         string IMigrationMetadata.Source

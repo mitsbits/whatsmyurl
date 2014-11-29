@@ -149,6 +149,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Dal\IConectionsRepository.cs" />
+    <Compile Include="Dal\Model\SessionUser.cs" />
     <Compile Include="Dal\MongoConnectionsRepository.cs" />
     <Compile Include="Dal\Model\HubState.cs" />
     <Compile Include="Dal\Model\IHubConnection.cs" />
@@ -162,9 +163,13 @@
     </Compile>
     <Compile Include="Hubs\AssistHub.cs" />
     <Compile Include="Hubs\AssistUserProvider.cs" />
-    <Compile Include="Migrations\201411282012371_SessionConnections.cs" />
-    <Compile Include="Migrations\201411282012371_SessionConnections.Designer.cs">
-      <DependentUpon>201411282012371_SessionConnections.cs</DependentUpon>
+    <Compile Include="Migrations\201411291135491_Init.cs" />
+    <Compile Include="Migrations\201411291135491_Init.Designer.cs">
+      <DependentUpon>201411291135491_Init.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201411291203139_Init1.cs" />
+    <Compile Include="Migrations\201411291203139_Init1.Designer.cs">
+      <DependentUpon>201411291203139_Init1.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -232,8 +237,11 @@
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201411282012371_SessionConnections.resx">
-      <DependentUpon>201411282012371_SessionConnections.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201411291135491_Init.resx">
+      <DependentUpon>201411291135491_Init.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201411291203139_Init1.resx">
+      <DependentUpon>201411291203139_Init1.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

@@ -24,11 +24,7 @@ namespace WhatsMyUrl.Controllers
             _repo = new SqlConectionsRepository();
         }
 
-        protected override void OnResultExecuted(ResultExecutedContext filterContext)
-        {
-            var hubContext = GlobalHost.ConnectionManager.GetHubContext<AssistHub>();
-            hubContext.Clients.All.hello();
-        }
+
 
         public ActionResult Index()
         {
@@ -49,14 +45,7 @@ namespace WhatsMyUrl.Controllers
             return View();
         }
 
-        [HttpPost]
-        [Route("HubConnect")]
-        public JsonResult HubConnect(string connectionId)
-        {
-            Session["hubId"] = connectionId;
-            var hubConnection = _repo.Event(Session.SessionID, Guid.Parse(connectionId), HubState.Connected);
-            return Json(hubConnection.Result);
-        }
+
 
 
     }

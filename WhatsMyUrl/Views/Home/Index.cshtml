@@ -4,20 +4,26 @@
 
 <div class="jumbotron">
     <div class="row">
-        <div class="col-md-3  text-right">hub: </div>
-        <div class="col-md-9"><span data-bind="text: currentState().hubId"></span></div>
-    </div>
-    <div class="row">
-        <div class="col-md-3 text-right">session: </div>
-        <div class="col-md-9"><span data-bind="text: currentState().sessionId"></span></div>
+        <div class="col-xs-3 text-right">hub: </div>
+        <div class="col-xs-9"><span data-bind="text: currentState().HubId"></span></div>
+
+        <div class="col-xs-3 text-right">session: </div>
+        <div class="col-xs-9"><span data-bind="text: currentState().SessionId"></span></div>
+        <div class="col-xs-3 text-right">user: </div>
+        <div class="col-xs-9">
+            <a data-bind="if: userName().length == 0,attr: { href: currentState().HubId },click: getUserInput">Log In</a>   
+            <span data-bind="text: userName"></span>
+        </div>
     </div>
 
-   
+                                                                      
 </div>
 
 <div class="row">
     <div class="col-md-4">
-
+        <ul data-bind="foreach: allHubs">
+            <li><span data-bind="text: SessionId"></span></li>
+        </ul>
     </div>
     <div class="col-md-4">
 
@@ -34,51 +40,62 @@
     <script type="text/javascript">
 
 
-        HubConnection = function () {
-
-            //this.id = '';
-
-            this.sessionId = '';
-
-            this.hubId = '';
-
-            this.hubState = {};
-
-            this.createdOn = new Date();
-        };
-        Map = function (entity) {
-            var hub = new HubConnection();
-            //hub.id = entity.Id;
-            hub.sessionId = entity.SessionId;
-            hub.hubId = entity.HubId;
-            hub.hubState = entity.HubState;
-            hub.createdOn = entity.CreatedOn;
-            return hub;
-        }
-
-        ViewModel = function () {
-            var self = this;
-            self.currentState = ko.observable();
-            self.stateHistory = ko.observableArray();
-        }
-
         $(function () {
+            var assistHubProxy = $.connection.assistHub;
             $.connection.assistHub.client.hello = function () {
                 console.log("Hello from server");
             };
-            $.connection.hub.start().done(function () {
-                $.ajax({
-                    url: '/hubconnect',
-                    data: { connectionId: $.connection.hub.id },
-                    type: 'post',
-                    success: function (shouldConnect) {
-                        var ahub = Map(shouldConnect);
-                        var model = new ViewModel();
-                        model.currentState(ahub);
+
+
+            ViewModel = function (current, alive) {
+                var self = this;
+
+                self.currentState = ko.observable(current);
+                self.stateHistory = ko.observableArray();
+                self.allHubs = ko.observableArray(alive);
+
+
+                self.userName = ko.computed(function () {
+                    var name = "";
+                    if (self.currentState().SessionUser) {
+                        name = self.currentState().SessionUser.UserName;
+                    }
+                    return name;
+                }, self);
+
+                self.getUserInput = function() {
+                    var name = prompt("Set User Name");
+                    if (name.length > 0) {
+                        assistHubProxy.server.setUser(name).done(function (conn) {
+                            self.currentState(conn);
+                        });
+                    }
+                }
+            }
+
+
+            function init() {
+
+                var _current;
+                var _alive;
+                assistHubProxy.server.current().done(function (conn) {
+                    _current = conn;
+                    assistHubProxy.server.alive().done(function (conns) {
+                        _alive = conns;
+                        var model = new ViewModel(_current, _alive);
+                       
                         ko.applyBindings(model);
-                    },
+                    });
                 });
-            });
+
+
+
+            }
+
+
+            $.connection.hub.start().done(init);
         });
+    </script>
+    <script type="text/html" id="alive-template">
     </script>
 }

@@ -33,17 +33,6 @@ namespace WhatsMyUrl
             }
         }
 
-        //protected internal void Application_BeginRequest(object sender, EventArgs e)
-        //{
-        //    HttpContext context = HttpContext.Current;
-        //    if (context != null && context.Session != null)
-        //    {
-        //        var sessionId = context.Session.SessionID;
-                
-        //        var identity = new GenericIdentity(sessionId);
-        //        var principal = new GenericPrincipal(identity, new[] {"signalR"});
-        //        context.User = principal;
-        //    }
-        //}
+
     }
 }

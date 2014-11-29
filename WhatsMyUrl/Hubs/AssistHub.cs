@@ -7,6 +7,7 @@ using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
 using Microsoft.Owin.Security.Provider;
 using WhatsMyUrl.Dal;
+using WhatsMyUrl.Dal.Model;
 
 namespace WhatsMyUrl.Hubs
 {
@@ -14,6 +15,21 @@ namespace WhatsMyUrl.Hubs
     public class AssistHub : Hub
     {
         private readonly IConectionsRepository _repository;
+        private string _session = string.Empty;
+
+        private string SessionId
+        {
+            get
+            {
+                if (!string.IsNullOrWhiteSpace(_session)) return _session;
+                if (Context.RequestCookies["ASP.NET_SessionId"] != null)
+                {
+                    _session = Context.RequestCookies["ASP.NET_SessionId"].Value;
+
+                }
+                return _session;
+            }
+        }
 
         public AssistHub(IConectionsRepository repository)
         {
@@ -24,35 +40,43 @@ namespace WhatsMyUrl.Hubs
         {
             Clients.All.hello();
         }
-        #region Event Handlers
-        public  override Task OnConnected()
+        public SessionConnection SetUser(string userName)
         {
             var hubId = Context.ConnectionId;
-            if (Context.RequestCookies["ASP.NET_SessionId"] != null)
+            return _repository.SetUser(userName, Guid.Parse(hubId)).Result;
+        }
+        public IEnumerable<SessionConnection> Alive()
+        {
+            return _repository.Alive().Result;
+        }
+        public SessionConnection Current()
+        {
+            var hubId = Context.ConnectionId;
+            return _repository.Event(SessionId, Guid.Parse(hubId), HubState.Connected).Result;
+        }
+        #region Event Handlers
+        public override  Task OnConnected()
+        {
+            var hubId = Context.ConnectionId;
+            if (!string.IsNullOrWhiteSpace(SessionId))
             {
-                var sessionId = Context.RequestCookies["ASP.NET_SessionId"].Value;
-               return   _repository.OnConnected(sessionId, Guid.Parse(hubId));
+                _repository.OnConnected(SessionId, Guid.Parse(hubId));
             }
             return base.OnConnected();
         }
-        public override  Task OnReconnected()
+        public override Task OnReconnected()
         {
             var hubId = Context.ConnectionId;
-            if (Context.RequestCookies["ASP.NET_SessionId"] != null)
-            {
-                var sessionId = Context.RequestCookies["ASP.NET_SessionId"].Value;
-               return  _repository.OnReconnected(sessionId, Guid.Parse(hubId));
-            }
+
+             _repository.OnReconnected(SessionId, Guid.Parse(hubId));
             return base.OnReconnected();
+
         }
-        public override  Task OnDisconnected(bool stopCalled)
+        public override Task OnDisconnected(bool stopCalled)
         {
             var hubId = Context.ConnectionId;
-            if (Context.RequestCookies["ASP.NET_SessionId"] != null)
-            {
-                var sessionId = Context.RequestCookies["ASP.NET_SessionId"].Value;
-              return   _repository.OnDisconnected(sessionId, Guid.Parse(hubId), stopCalled);
-            }
+
+             _repository.OnDisconnected(SessionId, Guid.Parse(hubId), stopCalled);
             return base.OnDisconnected(stopCalled);
         }
         #endregion

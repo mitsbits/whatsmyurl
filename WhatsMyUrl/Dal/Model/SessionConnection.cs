@@ -26,5 +26,7 @@ namespace WhatsMyUrl.Dal.Model
         public HubState HubState { get; set; }
         [Key]
         public DateTime CreatedOn { get; set; }
+
+        public virtual SessionUser SessionUser { get; set; }
     }
 }
