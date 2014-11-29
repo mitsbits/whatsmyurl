@@ -7,6 +7,7 @@ using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
 using Microsoft.Owin.Security.Provider;
 using WhatsMyUrl.Dal;
+using WhatsMyUrl.Dal.DTO;
 using WhatsMyUrl.Dal.Model;
 
 namespace WhatsMyUrl.Hubs
@@ -40,12 +41,16 @@ namespace WhatsMyUrl.Hubs
         {
             Clients.All.hello();
         }
+        public void UpdateAlive()
+        {
+            Clients.All.updateAlive();
+        }
         public SessionConnection SetUser(string userName)
         {
             var hubId = Context.ConnectionId;
             return _repository.SetUser(userName, Guid.Parse(hubId)).Result;
         }
-        public IEnumerable<SessionConnection> Alive()
+        public IEnumerable<SessionUserRef> Alive()
         {
             return _repository.Alive().Result;
         }
@@ -77,6 +82,7 @@ namespace WhatsMyUrl.Hubs
             var hubId = Context.ConnectionId;
 
              _repository.OnDisconnected(SessionId, Guid.Parse(hubId), stopCalled);
+            UpdateAlive();
             return base.OnDisconnected(stopCalled);
         }
         #endregion

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using WhatsMyUrl.Dal.DTO;
 using WhatsMyUrl.Dal.Model;
 
 namespace WhatsMyUrl.Dal
@@ -40,7 +41,7 @@ namespace WhatsMyUrl.Dal
             }
         }
 
-        public  Task<SessionConnection> Event(string sessionId, Guid hubId, HubState state = HubState.Unknown)
+        public Task<SessionConnection> Event(string sessionId, Guid hubId, HubState state = HubState.Unknown)
         {
             var connection = new SessionConnection(sessionId, hubId, state);
             using (var db = new SessionConnectionContext())
@@ -53,13 +54,40 @@ namespace WhatsMyUrl.Dal
             return Task.FromResult(connection);
         }
 
-        public Task<SessionConnection[]> Alive()
+        public Task<SessionUserRef[]> Alive()
         {
-            var result = new List<SessionConnection>();
+            var bucket = new List<SessionConnection>();
+            var result = new List<SessionUserRef>();
             using (var db = new SessionConnectionContext())
             {
                 var query = db.Database.SqlQuery<SessionConnection>(AliveSqlQuery);
-                result.AddRange(query.OrderByDescending(x=>x.CreatedOn).ToList());
+                bucket.AddRange(query.OrderByDescending(x => x.CreatedOn).ToList());
+                foreach (var sessionConnection in bucket)
+                {
+                    var userName = "N/A";
+                    var sesionUser = db.SessionUsers.FirstOrDefault(x => x.SessionId == sessionConnection.SessionId);
+                    if (sesionUser != null) userName = sesionUser.UserName;
+                    SessionUserRef sessionRef;
+                    if (result.Any(x => x.UserName == userName))
+                    {
+                        sessionRef = result.Find(x => x.UserName == userName);
+                        sessionRef.HubIds.Add(sessionConnection.HubId);
+                        sessionRef.SessionIds.Add(sessionConnection.SessionId);
+                    }
+                    else
+                    {
+                        sessionRef = new SessionUserRef()
+                        {
+                            UserName = userName,
+                            LastActivity = sessionConnection.CreatedOn
+                        };
+                        sessionRef.HubIds.Add(sessionConnection.HubId);
+                        sessionRef.SessionIds.Add(sessionConnection.SessionId);
+                        result.Add(sessionRef);
+                    }
+
+                }
+
             }
             return Task.FromResult(result.ToArray());
         }
@@ -87,7 +115,7 @@ namespace WhatsMyUrl.Dal
         public Task OnDisconnected(string sessionId, Guid connectionId, bool stopCalled)
         {
             return Event(sessionId, connectionId, HubState.Disconnected);
-        } 
+        }
         #endregion
 
 
@@ -105,7 +133,7 @@ namespace WhatsMyUrl.Dal
                     var sessionUser = db.SessionUsers.FirstOrDefault(x => x.SessionId == sessionId);
                     if (sessionUser == null)
                     {
-                        sessionUser = new SessionUser() {SessionId = sessionId, UserName = userName};
+                        sessionUser = new SessionUser() { SessionId = sessionId, UserName = userName };
                         db.SessionUsers.Add(sessionUser);
                     }
                     else
@@ -126,6 +154,6 @@ namespace WhatsMyUrl.Dal
         }
 
 
-   
+
     }
 }

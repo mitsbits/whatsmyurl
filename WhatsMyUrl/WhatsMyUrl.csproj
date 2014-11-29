@@ -148,6 +148,7 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Dal\DTO\SessionUserRef.cs" />
     <Compile Include="Dal\IConectionsRepository.cs" />
     <Compile Include="Dal\Model\SessionUser.cs" />
     <Compile Include="Dal\MongoConnectionsRepository.cs" />

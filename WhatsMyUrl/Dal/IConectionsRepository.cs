@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using WhatsMyUrl.Dal.DTO;
 using WhatsMyUrl.Dal.Model;
 
 namespace WhatsMyUrl.Dal
@@ -7,7 +8,7 @@ namespace WhatsMyUrl.Dal
     public interface IConectionsRepository
     {
         Task<SessionConnection> Event(string sessionId, Guid hubId, HubState state = HubState.Unknown);
-        Task<SessionConnection[]> Alive();
+        Task<SessionUserRef[]> Alive();
         Task<SessionConnection[]> History(string sessionId);
         Task<SessionConnection> SetUser(string userName, Guid connectionId);
         Task<SessionConnection> OnConnected(string sessionId, Guid connectionId);
