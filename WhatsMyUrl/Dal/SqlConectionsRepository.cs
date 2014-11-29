@@ -112,7 +112,7 @@ namespace WhatsMyUrl.Dal
         {
             return Event(sessionId, connectionId, HubState.Connected);
         }
-        public Task OnDisconnected(string sessionId, Guid connectionId, bool stopCalled)
+        public Task<SessionConnection> OnDisconnected(string sessionId, Guid connectionId, bool stopCalled)
         {
             return Event(sessionId, connectionId, HubState.Disconnected);
         }
@@ -155,5 +155,17 @@ namespace WhatsMyUrl.Dal
 
 
 
+
+
+        public Task<SessionGroupMessage> GroupMessage(string sender, string body, params string[] recipients)
+        {
+            var message = new SessionGroupMessage(sender, body, recipients);
+            using (var db = new SessionConnectionContext())
+            {
+                db.SessionGroupMessages.Add(message);
+                db.SaveChanges();
+            }
+            return Task.FromResult(message);
+        }
     }
 }

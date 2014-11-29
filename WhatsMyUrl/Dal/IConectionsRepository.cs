@@ -12,7 +12,8 @@ namespace WhatsMyUrl.Dal
         Task<SessionConnection[]> History(string sessionId);
         Task<SessionConnection> SetUser(string userName, Guid connectionId);
         Task<SessionConnection> OnConnected(string sessionId, Guid connectionId);
+        Task<SessionGroupMessage> GroupMessage(string sender, string body, params string[] recipients);
         Task OnReconnected(string sessionId, Guid connectionId);
-        Task OnDisconnected(string sessionId, Guid connectionId, bool stopCalled);
+        Task<SessionConnection> OnDisconnected(string sessionId, Guid connectionId, bool stopCalled);
     }
 }

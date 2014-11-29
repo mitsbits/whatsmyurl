@@ -16,9 +16,18 @@ namespace WhatsMyUrl.Migrations
                         HubId = c.Guid(nullable: false),
                         HubState = c.Int(nullable: false),
                     })
-                .PrimaryKey(t => t.CreatedOn)
-                .ForeignKey("dbo.SessionUsers", t => t.SessionId)
-                .Index(t => t.SessionId);
+                .PrimaryKey(t => t.CreatedOn);
+            
+            CreateTable(
+                "dbo.SessionGroupMessages",
+                c => new
+                    {
+                        CreatedOn = c.DateTime(nullable: false),
+                        InternalRecipients = c.String(),
+                        Sender = c.String(),
+                        Body = c.String(),
+                    })
+                .PrimaryKey(t => t.CreatedOn);
             
             CreateTable(
                 "dbo.SessionUsers",
@@ -33,9 +42,8 @@ namespace WhatsMyUrl.Migrations
         
         public override void Down()
         {
-            DropForeignKey("dbo.SessionConnections", "SessionId", "dbo.SessionUsers");
-            DropIndex("dbo.SessionConnections", new[] { "SessionId" });
             DropTable("dbo.SessionUsers");
+            DropTable("dbo.SessionGroupMessages");
             DropTable("dbo.SessionConnections");
         }
     }

@@ -13,6 +13,7 @@ namespace WhatsMyUrl.Dal
         public SessionConnectionContext()  : base("sql"){ }
         public DbSet<SessionConnection> SessionConnections { get; set; }
         public DbSet<SessionUser> SessionUsers { get; set; }
+        public DbSet<SessionGroupMessage> SessionGroupMessages { get; set; }
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Entity<SessionConnection>().Ignore(x => x.SessionUser);

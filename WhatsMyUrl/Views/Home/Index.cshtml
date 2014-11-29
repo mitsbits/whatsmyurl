@@ -22,11 +22,21 @@
 <div class="row">
     <div class="col-md-4">
         <ul data-bind="foreach: allHubs">
-            <li><span data-bind="text: UserName"></span></li>
+            <li>
+                <span data-bind="text: UserName"></span>
+                <a class="btn" data-bind="if: UserName != 'N/A' && UserName != $parent.userName(), click: $parent.sendMsssage">send message</a>
+            </li>
         </ul>
     </div>
     <div class="col-md-4">
-
+        <ul data-bind="foreach: received().reverse()">
+            <li>
+                <strong >
+                    <span data-bind="text: Sender"></span> ->  <span data-bind="text: Recipients[0]"></span> :  
+                </strong>                              
+                <span data-bind="text: Body"></span>
+            </li>
+        </ul>
     </div>
     <div class="col-md-4">
 
@@ -43,22 +53,25 @@
         $(function () {
             var model;
             var assistHubProxy = $.connection.assistHub;
-            $.connection.assistHub.client.hello = function () {
+            assistHubProxy.client.hello = function () {
                 console.log("Hello from server");
             };
-            $.connection.assistHub.client.updateAlive = function () {
+            assistHubProxy.client.updateAlive = function () {
                 assistHubProxy.server.alive().done(function (conns) {
                     model.allHubs(conns);
                 });
             };
-
+            assistHubProxy.client.handleMessage  = function (message) {
+                model.received.push(message);
+               
+            };
             ViewModel = function (current, alive) {
                 var self = this;
 
                 self.currentState = ko.observable(current);
                 self.stateHistory = ko.observableArray();
                 self.allHubs = ko.observableArray(alive);
-
+                self.received = ko.observableArray();
 
                 self.userName = ko.computed(function () {
                     var name = "";
@@ -75,6 +88,14 @@
                             self.currentState(conn);
                             assistHubProxy.server.updateAlive();
                         });
+                    }
+                }
+
+                self.sendMsssage = function (data) {
+                    var message = prompt("Send message to user: " + data.UserName);
+                    if (message.length > 0) {
+                       
+                        assistHubProxy.server.groupMessage(data.UserName, message);
                     }
                 }
             }

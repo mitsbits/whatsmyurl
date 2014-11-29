@@ -13,7 +13,7 @@ namespace WhatsMyUrl.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201411291135491_Init"; }
+            get { return "201411291917358_Init"; }
         }
         
         string IMigrationMetadata.Source

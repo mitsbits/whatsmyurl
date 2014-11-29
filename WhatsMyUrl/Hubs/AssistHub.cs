@@ -45,6 +45,17 @@ namespace WhatsMyUrl.Hubs
         {
             Clients.All.updateAlive();
         }
+
+        public void GroupMessage(string recipient, string body)
+        {
+            var hubId = Context.ConnectionId;
+            var conn = _repository.Event(SessionId, Guid.Parse(hubId), HubState.Connected).Result;
+            var sender = string.Empty;
+            if (conn.SessionUser != null) sender = conn.SessionUser.UserName;
+            var message = _repository.GroupMessage(sender, body, recipient).Result;
+            Clients.Group(recipient).handleMessage(message);
+            Clients.Group(sender).handleMessage(message);
+        }
         public SessionConnection SetUser(string userName)
         {
             var hubId = Context.ConnectionId;
@@ -65,7 +76,12 @@ namespace WhatsMyUrl.Hubs
             var hubId = Context.ConnectionId;
             if (!string.IsNullOrWhiteSpace(SessionId))
             {
-                _repository.OnConnected(SessionId, Guid.Parse(hubId));
+                var conn =   _repository.OnConnected(SessionId, Guid.Parse(hubId)).Result;
+                if (conn.SessionUser != null)
+                {
+                    Groups.Add(hubId, conn.SessionUser.UserName);
+                }
+                UpdateAlive();
             }
             return base.OnConnected();
         }
@@ -81,7 +97,11 @@ namespace WhatsMyUrl.Hubs
         {
             var hubId = Context.ConnectionId;
 
-             _repository.OnDisconnected(SessionId, Guid.Parse(hubId), stopCalled);
+            var conn = _repository.OnDisconnected(SessionId, Guid.Parse(hubId), stopCalled).Result;
+            if (conn.SessionUser != null)
+            {
+                Groups.Remove(hubId, conn.SessionUser.UserName);
+            }
             UpdateAlive();
             return base.OnDisconnected(stopCalled);
         }
