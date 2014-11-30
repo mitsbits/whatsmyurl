@@ -59,7 +59,9 @@ namespace WhatsMyUrl.Hubs
         public SessionConnection SetUser(string userName)
         {
             var hubId = Context.ConnectionId;
-            return _repository.SetUser(userName, Guid.Parse(hubId)).Result;
+            var conn = _repository.SetUser(userName, Guid.Parse(hubId)).Result;
+            Groups.Add(hubId, conn.SessionUser.UserName);
+            return conn;
         }
         public IEnumerable<SessionUserRef> Alive()
         {

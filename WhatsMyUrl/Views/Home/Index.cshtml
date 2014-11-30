@@ -24,7 +24,7 @@
         <ul data-bind="foreach: allHubs">
             <li>
                 <span data-bind="text: UserName"></span>
-                <a class="btn" data-bind="if: UserName != 'N/A' && UserName != $parent.userName(), click: $parent.sendMsssage">send message</a>
+                <a class="btn" data-bind="if: UserName != 'N/A' && UserName != $parent.userName() && $parent.userName().length > 0, click: $parent.sendMsssage">send message</a>
             </li>
         </ul>
     </div>
